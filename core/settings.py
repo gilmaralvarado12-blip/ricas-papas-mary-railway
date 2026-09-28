@@ -58,6 +58,7 @@ CSRF_TRUSTED_ORIGINS = _env_list(
 # ==========================================================
 # CONFIGURACIÓN DE SEGURIDAD Y SSL
 # ==========================================================
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
