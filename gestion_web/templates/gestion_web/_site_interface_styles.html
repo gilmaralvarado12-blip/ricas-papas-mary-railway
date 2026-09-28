@@ -1,0 +1,111 @@
+<style>
+    :root {
+        --rpm-interface-card-background: #FFFDF8;
+        --rpm-interface-card-border: rgba(169, 21, 29, 0.12);
+        --rpm-interface-card-radius: 18px;
+        --rpm-interface-card-shadow: 0 12px 30px rgba(74, 42, 0, 0.10);
+    }
+
+    .module-card,
+    .tarjeta,
+    .order-ui,
+    .payment-card,
+    .transfer-box {
+        background: var(--rpm-interface-card-background) !important;
+        border: 1px solid var(--rpm-interface-card-border) !important;
+        border-radius: var(--rpm-interface-card-radius) !important;
+        box-shadow: var(--rpm-interface-card-shadow) !important;
+    }
+
+    .rpm-chat-widget {
+        position: fixed !important;
+        right: max(20px, env(safe-area-inset-right)) !important;
+        bottom: max(20px, env(safe-area-inset-bottom)) !important;
+        z-index: 1045 !important;
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .rpm-chat-window {
+        border-radius: var(--rpm-interface-card-radius) !important;
+        box-shadow: var(--rpm-interface-card-shadow) !important;
+        width: min(390px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+        max-height: min(72vh, 560px);
+    }
+
+    .rpm-chat-messages {
+        width: 100%;
+        height: clamp(140px, 42vh, 320px);
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-y: auto;
+    }
+
+    .rpm-bot-cards {
+        min-width: 0;
+    }
+
+    .rpm-bot-card {
+        width: min(220px, 100%);
+        max-width: 100%;
+        min-width: min(180px, 100%);
+    }
+
+    .rpm-chat-window :is(p, a, strong, span) {
+        overflow-wrap: anywhere;
+    }
+
+    .modal-dialog {
+        max-width: min(var(--bs-modal-width, 500px), calc(100vw - 1rem));
+    }
+
+    .modal-dialog-scrollable .modal-content {
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+    }
+
+    .rpm-chat-launcher {
+        position: relative;
+        width: 58px !important;
+        height: 58px !important;
+        flex: 0 0 58px !important;
+        border-radius: 50% !important;
+        background: var(--rpm-navbar-accent) !important;
+        color: #2a0d0d !important;
+        box-shadow: 0 10px 24px rgba(74, 42, 0, 0.22) !important;
+    }
+
+    .rpm-chat-help-hint {
+        background: var(--rpm-interface-card-background) !important;
+        border-color: var(--rpm-interface-card-border) !important;
+        color: #4a2a00 !important;
+        box-shadow: 0 4px 12px rgba(74, 42, 0, 0.12) !important;
+    }
+
+    @media (max-width: 576px) {
+        .rpm-chat-widget {
+            right: max(12px, env(safe-area-inset-right)) !important;
+            bottom: max(12px, env(safe-area-inset-bottom)) !important;
+        }
+
+        .rpm-chat-window {
+            max-height: calc(100vh - 90px);
+            max-height: calc(100dvh - 90px);
+        }
+
+        .rpm-messages-container {
+            width: calc(100vw - 1rem);
+            max-width: calc(100vw - 1rem);
+            padding: 0.5rem !important;
+        }
+
+        .rpm-messages-container .alert {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+    }
+</style>

@@ -1,0 +1,321 @@
+<style>
+    /* Use centralized theme variables defined in _site_theme_vars.html */
+    .commerce-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0;
+        right: 0;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        z-index: 1050 !important;
+        background: var(--rpm-navbar-primary) !important;
+        color: #ffffff;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+        overflow: visible;
+    }
+
+    .commerce-mainbar {
+        max-width: 950px;
+        margin: 0 auto;
+        min-height: 62px;
+        gap: 1.25rem;
+        padding: 8px 0;
+    }
+
+    .rpm-restaurant-status {
+        display: inline-flex !important;
+        flex: 0 0 auto;
+        align-items: center;
+        white-space: nowrap;
+        min-width: max-content;
+    }
+
+    .nav-logo {
+        flex-shrink: 0;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #ffffff;
+    }
+
+    .nav-logo-badge {
+        width: 42px;
+        height: 42px;
+        padding: 3px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 30% 30%, #fff8e1 0%, #ffd166 55%, var(--rpm-navbar-accent) 100%);
+        border: 2px solid rgba(255,255,255,0.2);
+        box-shadow: 0 10px 18px rgba(74, 42, 0, 0.12);
+    }
+
+    .nav-logo-badge img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .nav-logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .commerce-header .nav-logo-title {
+        font-size: clamp(1.2rem, 2vw, 1.55rem);
+        letter-spacing: 0;
+        color: #ffffff !important;
+        font-weight: 900;
+    }
+
+    .commerce-header .nav-logo-subtitle {
+        font-size: 0.55rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14rem;
+        color: #ffe7a3 !important;
+        margin-top: 4px;
+    }
+
+    .commerce-search {
+        margin-left: auto;
+        flex: 0 1 465px;
+        max-width: 465px;
+    }
+
+    .commerce-search .form-control,
+    .commerce-search .btn {
+        min-height: 32px;
+        border-color: rgba(0,0,0,0.06);
+        background: var(--rpm-site-background);
+    }
+
+    .commerce-search .form-control {
+        color: var(--rpm-site-text);
+        font-size: 0.76rem;
+    }
+
+    .commerce-search .form-control:focus {
+        border-color: var(--rpm-navbar-accent);
+        box-shadow: 0 0 0 0.2rem rgba(255, 183, 3, 0.12);
+    }
+
+    .commerce-search .btn {
+        min-width: 38px;
+        background: linear-gradient(135deg, var(--rpm-navbar-accent) 0%, #ffd166 100%);
+        color: #2a0d0d;
+        font-weight: 800;
+    }
+
+    .commerce-categories {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box;
+        background: var(--rpm-navbar-secondary) !important;
+        border-top: 1px solid rgba(169, 21, 29, 0.08);
+    }
+
+    .commerce-categories .container {
+        width: 100%;
+        max-width: min(950px, 100%);
+        min-width: 0;
+        margin: 0 auto;
+        padding: 5px 8px 6px;
+        box-sizing: border-box;
+    }
+
+    .commerce-category-navbar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .commerce-category-navbar .navbar-toggler {
+        margin-left: auto;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 0.45rem 0.65rem;
+    }
+
+    .commerce-category-navbar .navbar-collapse {
+        min-width: 0;
+    }
+
+    .commerce-category-navbar .navbar-collapse > nav {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        gap: 0.2rem !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start;
+        overflow-x: visible;
+        overflow-y: visible;
+        padding-right: 15px;
+        box-sizing: border-box;
+    }
+
+    .commerce-categories .commerce-category-link {
+        color: #ffffff !important;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 3px 6px !important;
+        border-radius: 999px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        display: flex;
+        flex: 0 0 auto;
+        min-height: 30px;
+    }
+
+    .rpm-restaurant-status {
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-right: 8px;
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+        font-size: 0.85rem;
+    }
+
+    .commerce-category-link:hover,
+    .commerce-category-link:focus-visible,
+    .commerce-category-link.active {
+        color: #2a0d0d !important;
+        background: linear-gradient(135deg, var(--rpm-navbar-accent) 0%, #ffd166 100%) !important;
+        box-shadow: 0 8px 18px rgba(255, 180, 0, 0.18);
+    }
+
+    @media (max-width: 767.98px) {
+        .commerce-mainbar {
+            max-width: none;
+            padding-inline: 12px;
+        }
+
+        .commerce-mainbar .nav-logo {
+            width: auto !important;
+            max-width: none;
+            justify-content: flex-start;
+        }
+
+        .commerce-mainbar .nav-logo-text {
+            min-width: 0;
+        }
+
+        .commerce-search {
+            order: 3 !important;
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            max-width: none !important;
+            min-width: 0;
+            margin-left: 0;
+        }
+
+        .commerce-categories .container {
+            padding: 5px 12px 6px;
+        }
+
+        .commerce-category-navbar .navbar-collapse > nav {
+            flex-wrap: wrap !important;
+            overflow-x: visible;
+            overflow-y: visible;
+        }
+
+        .commerce-categories .container > .d-flex {
+            flex-wrap: nowrap !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .commerce-categories .commerce-category-link {
+            flex: 0 1 auto;
+            min-width: 0;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .rpm-restaurant-status {
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+            white-space: normal;
+            margin-right: 0;
+        }
+
+        .commerce-cart-link {
+            background: rgba(255, 183, 3, 0.16);
+            border: 1px solid rgba(255, 231, 163, 0.45);
+        }
+    }
+</style>
+
+<header class="commerce-header">
+    <div class="container-fluid py-2 commerce-mainbar d-flex align-items-center justify-content-between flex-wrap">
+        <a href="{% url 'home' %}" class="nav-logo flex-shrink-0" aria-label="Ricas Papas Mary">
+            <span class="nav-logo-badge">
+                <img src="{{ site_logo_url }}" alt="Logo Ricas Papas Mary">
+            </span>
+            <span class="nav-logo-text">
+                <span class="nav-logo-title">Ricas Papas Mary</span>
+                <span class="nav-logo-subtitle">{{ site_logo_subtitle }}</span>
+            </span>
+        </a>
+
+        <form class="input-group rounded-pill commerce-search" action="{% url 'home' %}" method="get" role="search">
+            <input type="search" name="q" value="{{ search_query }}" class="form-control rounded-start-pill" placeholder="Buscar en el menú..." aria-label="Buscar en el menú">
+            <button class="btn rounded-end-pill" type="submit" aria-label="Buscar">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="commerce-categories w-100 vw-100 container-fluid p-0 m-0">
+        <div class="container py-1">
+            <div class="commerce-category-navbar navbar navbar-expand-lg p-0">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#commerceCategoriesMenu" aria-controls="commerceCategoriesMenu" aria-expanded="false" aria-label="Mostrar categorías">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="commerceCategoriesMenu">
+                    <nav class="d-flex align-items-center gap-2 flex-wrap" aria-label="Categorías principales">
+                        <a href="{% url 'home' %}" class="commerce-category-link d-inline-flex align-items-center gap-2 px-3 py-2 {% if not active_category %}active{% endif %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a>
+                        <a href="{% url 'home' %}?categoria=combos" class="commerce-category-link d-inline-flex align-items-center gap-2 px-3 py-2 {% if active_category == 'combos' %}active{% endif %}"><i class="fa-solid fa-box-open" aria-hidden="true"></i> Combos</a>
+                        <a href="{% url 'home' %}?categoria=papas" class="commerce-category-link d-inline-flex align-items-center gap-2 px-3 py-2 {% if active_category == 'papas' %}active{% endif %}"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Papas Fritas</a>
+                        <a href="{% url 'home' %}?categoria=bebidas" class="commerce-category-link d-inline-flex align-items-center gap-2 px-3 py-2 {% if active_category == 'bebidas' %}active{% endif %}"><i class="fa-solid fa-glass-water" aria-hidden="true"></i> Bebidas</a>
+                        <a href="{% url 'ver_menu' %}?modulo=reservas" class="commerce-category-link d-inline-flex align-items-center gap-2 px-3 py-2"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Reservas</a>
+                        <a href="{% url 'ver_menu' %}?modulo=pedidos" class="commerce-category-link commerce-cart-link d-inline-flex align-items-center gap-2" aria-label="Ver tu pedido">
+                            <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                            <span>Mi pedido</span>
+                            <span class="badge rounded-pill bg-warning text-dark rpm-cart-count" data-cart-count aria-label="{{ cart_count|default:0 }} productos en tu pedido">{{ cart_count|default:0 }}</span>
+                        </a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'usuarios:mi_perfil' %}" class="commerce-category-link d-flex align-items-center gap-2 px-3 py-2"><i class="fa-solid fa-user" aria-hidden="true"></i> {{ user.username }}</a>
+                            <span class="badge rpm-restaurant-status {{ restaurant_status.clase }} text-white px-3 py-2" title="Horario de atención">
+                                <i class="fa-solid fa-circle me-1" aria-hidden="true"></i>{{ restaurant_status.texto }}
+                            </span>
+                            {% if user.rol == 'REPARTIDOR' or user.rol == 'EMPLEADO' or user.rol == 'ADMIN' %}
+                                <a class="commerce-category-link d-flex align-items-center gap-2 px-3 py-2" href="{% url 'entregas:lista_entregas' %}"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i> Entregas</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}" class="commerce-category-link">Iniciar sesión</a>
+                            <span class="badge rpm-restaurant-status {{ restaurant_status.clase }} text-white px-3 py-2" title="Horario de atención">
+                                <i class="fa-solid fa-circle me-1" aria-hidden="true"></i>{{ restaurant_status.texto }}
+                            </span>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

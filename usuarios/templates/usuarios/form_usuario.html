@@ -1,0 +1,14 @@
+{% extends 'gestion_web/base.html' %}
+{% block content %}
+<div class="tarjeta user-form-card" data-animate-module>
+    <h2>{{ titulo }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Guardar</button>
+            <a class="btn btn-order-neutral" href="{% url 'usuarios:lista_usuarios' %}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

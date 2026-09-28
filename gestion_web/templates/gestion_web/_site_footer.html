@@ -1,0 +1,57 @@
+<footer class="rpm-home-footer bg-dark text-white pt-5 pb-3 mt-5" aria-labelledby="footer-title">
+    <div class="container">
+        <h2 id="footer-title" class="visually-hidden">Información de Ricas Papas Mary</h2>
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-xl-3">
+                <h3 class="footer-title mb-3">Ricas Papas Mary</h3>
+                <p class="footer-description">
+                    {{ site_config.texto_bienvenida|default:"El sabor de casa, preparado con cariño para compartir." }}
+                </p>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <h3 class="footer-title mb-3">Navegación</h3>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}"><i class="fa-solid fa-house me-2" aria-hidden="true"></i>Inicio</a></li>
+                    <li><a href="{% url 'ver_menu' %}"><i class="fa-solid fa-utensils me-2" aria-hidden="true"></i>Menú / Carta</a></li>
+                    <li><a href="{% url 'ver_menu' %}?modulo=pedidos"><i class="fa-solid fa-receipt me-2" aria-hidden="true"></i>Mis pedidos</a></li>
+                    <li><a href="{% url 'reservas:mis_reservas' %}"><i class="fa-solid fa-calendar-days me-2" aria-hidden="true"></i>Reservas</a></li>
+                </ul>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <h3 class="footer-title mb-3">Contacto y horario</h3>
+                <ul class="footer-links footer-contact">
+                    <li><i class="fa-solid fa-location-dot me-2 text-warning" aria-hidden="true"></i>{{ site_config.direccion|default:"Rukullacta, Archidona" }}</li>
+                    <li><i class="fa-solid fa-clock me-2 text-warning" aria-hidden="true"></i>{{ site_config.horario|default:"Lun - Dom: 09:00 - 21:00" }}</li>
+                    {% if site_config.telefono %}
+                    <li><i class="fa-solid fa-phone me-2 text-warning" aria-hidden="true"></i><a href="tel:{{ site_config.telefono }}">{{ site_config.telefono }}</a></li>
+                    {% endif %}
+                    {% if site_config.whatsapp %}
+                    <li><i class="fa-brands fa-whatsapp me-2 text-warning" aria-hidden="true"></i><a href="{{ site_whatsapp_url }}" target="_blank" rel="noopener noreferrer">{{ site_config.whatsapp }}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <h3 class="footer-title mb-3">Ubicación</h3>
+                <div class="footer-map">
+                    <iframe
+                        src="{{ site_config.mapa_iframe_url|default:'https://www.google.com/maps?q=Rukullacta%2C%20Archidona&output=embed' }}"
+                        title="Mapa de Ricas Papas Mary"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div class="footer-map-content">
+                        <a class="footer-map-button" href="https://www.google.com/maps/search/?api=1&amp;query=Ricas+Papas+%22Mary%22%2C+4643%2B629%2C+Rukullacta" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-solid fa-location-arrow" aria-hidden="true"></i> Ver en Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="footer-divider my-4">
+        <div class="text-center small text-white-50">
+            &copy; 2026 Ricas Papas Mary. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>

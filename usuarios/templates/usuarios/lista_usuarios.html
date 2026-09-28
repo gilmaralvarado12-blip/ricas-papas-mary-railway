@@ -1,0 +1,46 @@
+{% extends 'gestion_web/base.html' %}
+{% block content %}
+<div class="tarjeta" data-animate-module>
+    <div class="module-header">
+        <h2 class="module-title">Gestión de usuarios</h2>
+        <a class="btn" href="{% url 'usuarios:crear_usuario' %}"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Nuevo usuario</a>
+    </div>
+
+    <div class="table-responsive mt-3">
+        <table class="module-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td><span class="user-cell-text text-truncate d-inline-block">{{ u.username }}</span></td>
+                    <td><span class="user-cell-text text-truncate d-inline-block">{{ u.first_name }} {{ u.last_name }}</span></td>
+                    <td><span class="user-cell-text text-truncate d-inline-block">{{ u.email }}</span></td>
+                    <td>{{ u.get_rol_display }}</td>
+                    <td>{% if u.is_active %}Sí{% else %}No{% endif %}</td>
+                    <td class="text-center">
+                        <a class="btn-edit" href="{% url 'usuarios:editar_usuario' u.id %}"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> Editar</a>
+                        <a class="text-danger ms-2" href="{% url 'usuarios:eliminar_usuario' u.id %}"><i class="fa-solid fa-trash" aria-hidden="true"></i> Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">
+                        <strong>Aún no hay usuarios registrados</strong>
+                        <small class="d-block">Puedes crear el primero con el botón “Nuevo usuario”.</small>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

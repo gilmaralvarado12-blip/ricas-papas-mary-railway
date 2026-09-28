@@ -1,0 +1,192 @@
+{% if client_session_expires_at_ms %}
+<style>
+    .rpm-session-warning {
+        position: fixed;
+        z-index: 1044;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        width: min(26rem, calc(100vw - 2rem));
+        padding: 0.85rem 1rem;
+        border: 1px solid #ffca2c;
+        border-radius: 0.75rem;
+        background: #fff3cd;
+        color: #664d03;
+        box-shadow: 0 0.5rem 1.25rem rgba(33, 37, 41, 0.16);
+    }
+
+    .rpm-session-warning[hidden] {
+        display: none !important;
+    }
+
+    .rpm-session-warning-message {
+        flex: 1;
+        margin: 0;
+    }
+
+    @media (max-width: 575.98px) {
+        .rpm-session-warning {
+            right: 0.75rem;
+            width: calc(100vw - 1.5rem);
+        }
+    }
+</style>
+
+<div class="rpm-session-warning" id="rpmSessionExpiryWarning" role="status" aria-live="polite" hidden
+    data-expires-at="{{ client_session_expires_at_ms }}"
+    data-activity-url="{% url 'client_session_activity' %}"
+    data-login-url="{% url 'login' %}?session_expired=1"
+    data-csrf-token="{{ client_session_csrf_token }}">
+    <p class="rpm-session-warning-message" id="rpmSessionExpiryWarningMessage">
+        Tu sesión finalizará pronto por inactividad. Realiza alguna acción para mantenerla activa.
+    </p>
+    <button type="button" class="btn-close" aria-label="Cerrar aviso de sesión"></button>
+</div>
+
+<script>
+    (function () {
+        var warning = document.getElementById('rpmSessionExpiryWarning');
+        if (!warning) return;
+
+        var expiresAt = Number(warning.dataset.expiresAt);
+        var activityUrl = warning.dataset.activityUrl;
+        var loginUrl = warning.dataset.loginUrl;
+        var csrfToken = warning.dataset.csrfToken;
+        var message = document.getElementById('rpmSessionExpiryWarningMessage');
+        var closeButton = warning.querySelector('.btn-close');
+        var warningDismissed = false;
+        var lastSyncStartedAt = null;
+        var syncInFlight = false;
+        var syncIntervalMs = 5 * 60 * 1000;
+        var warningWindowMs = 5 * 60 * 1000;
+        var expiryChannel = 'BroadcastChannel' in window
+            ? new BroadcastChannel('rpm-client-session-expiry')
+            : null;
+
+        if (!Number.isFinite(expiresAt) || !activityUrl || !loginUrl) {
+            console.error('No se pudo inicializar el aviso de expiración de sesión.');
+            return;
+        }
+
+        function redirectToLogin() {
+            window.location.replace(loginUrl);
+        }
+
+        if (expiryChannel) {
+            expiryChannel.addEventListener('message', function (event) {
+                var sharedExpiry = Number(event.data);
+                if (Number.isFinite(sharedExpiry) && sharedExpiry > Date.now()) {
+                    expiresAt = sharedExpiry;
+                    warningDismissed = false;
+                    warning.hidden = true;
+                    updateWarning();
+                }
+            });
+        }
+
+        function positionWarning() {
+            var header = document.querySelector('.site-header, .commerce-header');
+            var top = header ? header.getBoundingClientRect().bottom + 8 : 16;
+            warning.style.top = Math.max(8, top) + 'px';
+        }
+
+        function updateWarning() {
+            var remainingMs = expiresAt - Date.now();
+            if (remainingMs <= 0) {
+                redirectToLogin();
+                return;
+            }
+
+            if (remainingMs <= warningWindowMs && !warningDismissed) {
+                var minutes = Math.max(1, Math.ceil(remainingMs / 60000));
+                message.textContent = '⏱ Tu sesión finalizará en ' + minutes
+                    + (minutes === 1 ? ' minuto' : ' minutos')
+                    + ' por inactividad. Realiza alguna acción para mantenerla activa.';
+                warning.hidden = false;
+            }
+        }
+
+        function synchronizeActivity() {
+            var now = window.performance && typeof window.performance.now === 'function'
+                ? window.performance.now()
+                : Date.now();
+            if (
+                (lastSyncStartedAt !== null && now - lastSyncStartedAt < syncIntervalMs)
+                || syncInFlight
+            ) return;
+            if (!csrfToken) {
+                console.error('No se pudo renovar la sesión: falta el token CSRF.');
+                return;
+            }
+
+            lastSyncStartedAt = now;
+            syncInFlight = true;
+            fetch(activityUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                keepalive: true,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(function (response) {
+                if (response.status === 401) {
+                    redirectToLogin();
+                    return null;
+                }
+                if (!response.ok) {
+                    throw new Error('La renovación de sesión fue rechazada (' + response.status + ').');
+                }
+                return response.json();
+            }).then(function (data) {
+                if (!data) return;
+                var serverExpiry = Number(data.expires_at);
+                if (!Number.isFinite(serverExpiry) || serverExpiry <= Date.now()) {
+                    throw new Error('El servidor devolvió una expiración de sesión inválida.');
+                }
+                expiresAt = serverExpiry;
+                if (expiryChannel) expiryChannel.postMessage(expiresAt);
+                warningDismissed = false;
+                warning.hidden = true;
+                updateWarning();
+            }).catch(function (error) {
+                console.error('No se pudo sincronizar la actividad de sesión:', error);
+            }).finally(function () {
+                syncInFlight = false;
+            });
+        }
+
+        function registerActivity(event) {
+            if (!event.isTrusted) return;
+            if (Date.now() >= expiresAt) {
+                redirectToLogin();
+                return;
+            }
+            warningDismissed = false;
+            warning.hidden = true;
+            synchronizeActivity();
+        }
+
+        if (closeButton) {
+            closeButton.addEventListener('click', function (event) {
+                event.stopPropagation();
+                warningDismissed = true;
+                warning.hidden = true;
+            });
+        }
+
+        ['click', 'keydown', 'pointerdown', 'pointermove', 'touchstart', 'wheel'].forEach(function (eventName) {
+            document.addEventListener(eventName, registerActivity, { passive: true, capture: true });
+        });
+
+        window.addEventListener('resize', positionWarning);
+        document.addEventListener('shown.bs.collapse', positionWarning);
+        document.addEventListener('hidden.bs.collapse', positionWarning);
+        positionWarning();
+        updateWarning();
+        window.setInterval(updateWarning, 1000);
+    })();
+</script>
+{% endif %}

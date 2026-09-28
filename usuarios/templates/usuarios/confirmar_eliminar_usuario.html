@@ -1,0 +1,15 @@
+{% extends 'gestion_web/base.html' %}
+{% block content %}
+<div class="tarjeta user-confirm-card" data-animate-module>
+    <h2>Eliminar usuario</h2>
+    <p>¿Seguro que deseas eliminar al usuario <strong>{{ usuario_obj.username }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-order-danger" type="submit"><i class="fa-solid fa-trash" aria-hidden="true"></i> Sí, eliminar</button>
+            <a class="btn btn-order-neutral" href="{% url 'usuarios:lista_usuarios' %}"><i class="fa-solid fa-ban" aria-hidden="true"></i> Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

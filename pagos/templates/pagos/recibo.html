@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Recibo Pedido #{{ pedido.id }}</title>
+    <style>
+        body { color:#292524; font-family:Arial,sans-serif; margin:0; background:#f5f5f4; }
+        .receipt { background:#fff; margin:24px auto; max-width:780px; padding:32px; box-shadow:0 4px 18px #0001; }
+        .receipt-header { align-items:center; border-bottom:2px solid #8f1520; display:flex; gap:16px; padding-bottom:16px; }
+        .receipt-logo { height:64px; object-fit:contain; width:64px; }
+        h1 { color:#8f1520; margin:0; } h2 { font-size:16px; margin:24px 0 8px; }
+        *, *::before, *::after { box-sizing:border-box; }
+        body { max-width:100%; }
+        .meta, .financial { display:grid; gap:6px 24px; grid-template-columns:1fr 1fr; }
+        .meta { margin-top:16px; } .products { border-collapse:collapse; margin-top:8px; width:100%; }
+        .products-wrap { max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .products { min-width:540px; }
+        th, td { border-bottom:1px solid #e7e5e4; padding:10px 8px; text-align:left; }
+        th { background:#8f1520; color:white; } .number { text-align:right; }
+        .financial { border-top:2px solid #e7e5e4; margin-top:20px; padding-top:14px; }
+        .status { background:#d1fae5; border-radius:999px; color:#166534; display:inline-block; font-weight:700; padding:5px 10px; }
+        .actions { display:flex; gap:8px; justify-content:flex-end; margin-bottom:16px; }
+        button { background:#8f1520; border:0; color:white; cursor:pointer; padding:9px 14px; }
+        @media print { body { background:#fff; } .receipt { box-shadow:none; margin:0; max-width:none; } .products-wrap { overflow:visible; } .products { min-width:0; } .actions { display:none; } }
+        @media (max-width:600px) { .receipt { margin:0; padding:18px; } .meta,.financial { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<main class="receipt">
+    <div class="actions"><button type="button" onclick="window.print()">Imprimir</button></div>
+    <header class="receipt-header">
+        <img class="receipt-logo" src="{{ logo_url }}" alt="Logo de Ricas Papas Mary">
+        <div><h1>Ricas Papas Mary</h1><div>{{ configuracion.direccion|default:"Archidona" }}</div></div>
+    </header>
+    <div class="meta">
+        <div><strong>Pedido:</strong> #{{ pedido.id }}</div>
+        <div><strong>Fecha:</strong> {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</div>
+        <div><strong>Cliente:</strong> {{ pedido.cliente.get_full_name|default:pedido.cliente.username }}</div>
+        <div><strong>Teléfono:</strong> {{ pedido.cliente.telefono|default:"-" }}</div>
+        <div><strong>Dirección:</strong> {{ direccion_entrega|default:"-" }}</div>
+        <div><strong>RUC/NIT:</strong> No configurado</div>
+    </div>
+    <h2>Detalle del pedido</h2>
+    <div class="products-wrap">
+        <table class="products"><thead><tr><th>Cant.</th><th>Producto</th><th class="number">Precio unitario</th><th class="number">Subtotal</th></tr></thead><tbody>
+        {% for detalle in pedido.detalles.all %}<tr><td>{{ detalle.cantidad }}</td><td>{{ detalle.producto.nombre }}</td><td class="number">${{ detalle.precio_unitario|floatformat:2 }}</td><td class="number">${{ detalle.subtotal_recibo|floatformat:2 }}</td></tr>{% endfor %}
+        </tbody></table>
+    </div>
+    <div class="financial">
+        <div>Subtotal</div><div class="number">${{ subtotal|floatformat:2 }}</div>
+        <div>Tarifa de delivery</div><div class="number">${{ delivery_fee|floatformat:2 }}</div>
+        <div><strong>Total general</strong></div><div class="number"><strong>${{ pedido.total|floatformat:2 }}</strong></div>
+        <div><strong>Estado del pago</strong></div><div class="number"><span class="status">{% if pago_confirmado %}PAGADO / CONFIRMADO{% else %}PENDIENTE{% endif %}</span></div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends 'gestion_web/base.html' %}
+{% block contenido %}
+<div class="tarjeta" data-animate-module>
+    <h2>Comprobantes por revisar</h2>
+    <ul>
+        {% for c in comprobantes %}
+        <li>
+            Pedido #{{ c.pedido.id }} - {{ c.estado_display }} - {{ c.fecha_subida|date:"d/m/Y H:i" }}
+            <a class="btn btn-order-neutral" href="{% url 'pagos:validar_comprobante' c.id %}">Ver y revisar</a>
+        </li>
+        {% empty %}
+        <li class="module-empty-state">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            <strong>Todo está al día</strong>
+            <small>No tienes comprobantes pendientes de revisión.</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

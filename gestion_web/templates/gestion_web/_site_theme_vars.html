@@ -1,0 +1,15 @@
+{% comment %}Shared dynamic theme variables for the standalone home and base layout.{% endcomment %}
+:root {
+    --rpm-navbar-primary: #a9151d;
+    --rpm-navbar-secondary: #8d1018;
+    --rpm-navbar-accent: #ffb703;
+    --rpm-site-primary: {{ site_config.color_principal|default:'#F57C00' }};
+    --rpm-site-secondary: {{ site_config.color_secundario|default:'#B71C1C' }};
+    --rpm-site-buttons: {{ site_config.color_botones|default:'#FF9800' }};
+    --rpm-site-menu: {{ site_config.color_menu|default:'#F57C00' }};
+    --rpm-site-background: {{ site_config.color_fondo|default:'#FFFFFF' }};
+    --rpm-site-headings: {{ site_config.color_encabezados|default:'#212529' }};
+    --rpm-site-text: {{ site_config.color_texto|default:'#212529' }};
+    --rpm-site-links: {{ site_config.color_enlaces|default:'#D96600' }};
+    --rpm-site-link-hover: {{ site_config.color_principal|default:'#F57C00' }};
+}

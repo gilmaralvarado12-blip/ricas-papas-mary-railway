@@ -1,0 +1,482 @@
+<style>
+    .rpm-chat-widget {
+        z-index: 1055;
+        right: max(16px, env(safe-area-inset-right));
+        bottom: max(16px, env(safe-area-inset-bottom));
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .rpm-chat-window {
+        display: none;
+        width: min(390px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+        max-height: min(72vh, 560px);
+        margin-bottom: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 14px 36px rgba(17, 3, 3, 0.3);
+    }
+
+    .rpm-chat-window.is-open {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rpm-chat-header {
+        background: linear-gradient(135deg, #8d1018 0%, #b21e29 100%);
+        color: #fffdf8;
+    }
+
+    .rpm-chat-messages {
+        height: clamp(140px, 42vh, 320px);
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        background: #fff8e8;
+    }
+
+    .rpm-chat-message {
+        max-width: 88%;
+        padding: 9px 12px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .rpm-chat-message.bot {
+        color: #4a2a00;
+        background: #fffdf8;
+        border: 1px solid #ead8b9;
+    }
+
+    .rpm-chat-launcher {
+        position: relative;
+        width: 62px;
+        height: 62px;
+        flex: 0 0 62px;
+        color: #4a2a00;
+        background: linear-gradient(135deg, #ffb703 0%, #ffd166 100%);
+        border: 0;
+        box-shadow: 0 8px 20px rgba(17, 3, 3, 0.28);
+    }
+
+    .rpm-chat-launcher-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        max-width: calc(100vw - 40px);
+    }
+
+    .rpm-chat-help-bubble {
+        position: relative;
+        display: flex;
+        flex: 0 1 225px;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 225px;
+        max-width: calc(100vw - 110px);
+        padding: 10px 13px;
+        border: 1px solid #e5c66f;
+        border-radius: 14px;
+        background: #fffdf8;
+        box-shadow: 0 6px 18px rgba(74, 42, 0, 0.14);
+        color: #4a2a00;
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(5px);
+        transition: opacity 220ms ease, transform 220ms ease, visibility 0s linear 220ms;
+        visibility: hidden;
+    }
+
+    .rpm-chat-help-bubble::after {
+        position: absolute;
+        top: 50%;
+        right: -7px;
+        width: 12px;
+        height: 12px;
+        border-top: 1px solid #e5c66f;
+        border-right: 1px solid #e5c66f;
+        background: #fffdf8;
+        content: "";
+        transform: translateY(-50%) rotate(45deg);
+    }
+
+    .rpm-chat-help-bubble.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+        transition-delay: 0s;
+        visibility: visible;
+    }
+
+    .rpm-chat-help-title {
+        color: #8d1018;
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .rpm-chat-help-subtitle {
+        margin-top: 3px;
+        color: #514b45;
+        font-size: 0.8rem;
+        font-weight: 400;
+        line-height: 1.3;
+    }
+
+    .rpm-chat-widget.is-chat-open .rpm-chat-help-bubble {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(5px);
+        visibility: hidden;
+    }
+
+    .rpm-chat-launcher .rpm-chat-icon-close {
+        display: none;
+    }
+
+    .rpm-chat-launcher .rpm-chat-icon-open,
+    .rpm-chat-launcher.is-open .rpm-chat-icon-open {
+        display: inline-block;
+    }
+
+    .rpm-chat-launcher.is-open .rpm-chat-icon-close {
+        display: none;
+    }
+
+    .rpm-chat-logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: contain;
+        background: #fff;
+    }
+
+    .rpm-chat-quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .rpm-chat-quick-action,
+    .rpm-chat-navigation-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 6px 10px;
+        border: 0;
+        border-radius: 999px;
+        background: #b21e29;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .rpm-bot-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .rpm-bot-card {
+        width: min(220px, 100%);
+        max-width: 100%;
+        min-width: min(180px, 100%);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .rpm-bot-card-img {
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #fafafa;
+    }
+
+    .rpm-bot-card-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+
+    .rpm-bot-card-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .rpm-bot-card-title {
+        color: #222;
+        font-weight: 700;
+    }
+
+    .rpm-bot-card-desc {
+        flex: 1;
+        min-height: 32px;
+        color: #666;
+        font-size: 0.82rem;
+        line-height: 1.35;
+    }
+
+    .rpm-bot-card-price {
+        color: #b21e29;
+        font-weight: 700;
+    }
+
+    .rpm-bot-card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px;
+        border-top: 1px solid #f1f1f1;
+        text-align: center;
+    }
+
+    .rpm-bot-card-actions a {
+        color: #b21e29;
+        font-weight: 700;
+    }
+
+    .rpm-chat-window :is(p, a, strong, span) {
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 576px) {
+        .rpm-chat-window {
+            max-height: min(72vh, calc(100dvh - 90px));
+        }
+
+        .rpm-chat-launcher-row {
+            max-width: calc(100vw - 24px);
+            gap: 8px;
+        }
+
+        .rpm-chat-help-bubble {
+            width: min(210px, calc(100vw - 94px));
+            max-width: calc(100vw - 94px);
+            padding: 9px 11px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rpm-chat-help-bubble {
+            transition: none;
+        }
+    }
+</style>
+
+<div class="rpm-chat-widget position-fixed">
+    <section class="card rpm-chat-window" id="rpmChatWindow" aria-labelledby="rpmChatTitle" aria-hidden="true">
+        <div class="card-header rpm-chat-header d-flex align-items-center justify-content-between py-3">
+            <h2 class="h6 mb-0 d-flex align-items-center gap-2" id="rpmChatTitle">
+                <img src="{{ site_logo_url }}" alt="Logotipo de Ricas Papas Mary" class="rpm-chat-logo">
+                <span>Asistente Virtual - Ricas Papas</span>
+            </h2>
+            <button class="btn btn-sm btn-link text-white p-0" id="rpmChatClose" type="button" aria-label="Cerrar asistente">
+                <i class="fa-solid fa-xmark fs-5" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="card-body rpm-chat-messages p-3" id="rpmChatMessages" aria-live="polite">
+            <div class="rpm-chat-message bot">
+                <div>¡Hola! 👋 Soy el asistente virtual de Ricas Papas Mary.</div>
+                <div class="mt-2">Puedo ayudarte con el menú, precios, pedidos, reservas, pagos, entregas, horarios y ubicación.</div>
+                <div class="rpm-chat-quick-actions">
+                    <button type="button" class="rpm-chat-quick-action" data-message="Ver menú">🍔 Menú</button>
+                    <button type="button" class="rpm-chat-quick-action" data-message="Consultar precios">💰 Precios</button>
+                    <button type="button" class="rpm-chat-quick-action" data-message="Reservar mesa">🪑 Reservas</button>
+                    <button type="button" class="rpm-chat-quick-action" data-message="Ubicación">📍 Ubicación</button>
+                    <button type="button" class="rpm-chat-quick-action" data-message="Ver mi carrito">🛒 Mi carrito</button>
+                    <button type="button" class="rpm-chat-quick-action" data-message="Horarios">🕒 Horarios</button>
+                </div>
+            </div>
+        </div>
+        <form class="card-footer bg-white p-2" id="rpmChatForm">
+            <div class="input-group">
+                <label class="visually-hidden" for="rpmChatInput">Escribe tu mensaje</label>
+                <input class="form-control" id="rpmChatInput" type="text" maxlength="150" placeholder="Escribe tu mensaje..." autocomplete="off">
+                <button class="btn btn-warning" type="submit" aria-label="Enviar">
+                    <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </button>
+            </div>
+        </form>
+    </section>
+    <div class="rpm-chat-launcher-row" id="rpmChatLauncherRow">
+        <button class="rpm-chat-help-bubble" id="rpmChatHelpBubble" type="button" aria-label="¿Necesitas ayuda? Estoy aquí para ayudarte" aria-controls="rpmChatWindow" aria-hidden="true" tabindex="-1">
+            <span class="rpm-chat-help-title">¿Necesitas ayuda?</span>
+            <span class="rpm-chat-help-subtitle">Estoy aquí para ayudarte</span>
+        </button>
+        <button class="rpm-chat-launcher rounded-circle d-flex align-items-center justify-content-center" id="rpmChatLauncher" type="button" aria-label="Abrir asistente virtual" aria-controls="rpmChatWindow" aria-expanded="false">
+            <i class="fa-solid fa-robot fs-4 rpm-chat-icon rpm-chat-icon-open" aria-hidden="true"></i>
+            <i class="fa-solid fa-xmark fs-4 rpm-chat-icon rpm-chat-icon-close" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.rpmChatInitialized) return;
+        window.rpmChatInitialized = true;
+        var launcher = document.getElementById('rpmChatLauncher');
+        var windowElement = document.getElementById('rpmChatWindow');
+        var closeButton = document.getElementById('rpmChatClose');
+        var helpBubble = document.getElementById('rpmChatHelpBubble');
+        var launcherRow = document.getElementById('rpmChatLauncherRow');
+        var form = document.getElementById('rpmChatForm');
+        var input = document.getElementById('rpmChatInput');
+        var messages = document.getElementById('rpmChatMessages');
+        if (!launcher || !windowElement || !form || !input || !messages) return;
+        var widget = launcher.closest('.rpm-chat-widget');
+
+        function toggle(open) {
+            windowElement.classList.toggle('is-open', open);
+            widget.classList.toggle('is-chat-open', open);
+            launcher.classList.toggle('is-open', open);
+            windowElement.setAttribute('aria-hidden', open ? 'false' : 'true');
+            launcher.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open) setHelpBubbleVisible(false);
+            if (open) input.focus();
+        }
+
+        var initialBubbleVisible = true;
+        function setHelpBubbleVisible(visible) {
+            if (!helpBubble) return;
+            helpBubble.classList.toggle('is-visible', visible);
+            helpBubble.setAttribute('aria-hidden', visible ? 'false' : 'true');
+            helpBubble.tabIndex = visible ? 0 : -1;
+        }
+
+        if (helpBubble && launcherRow) {
+            setHelpBubbleVisible(true);
+            window.setTimeout(function () {
+                initialBubbleVisible = false;
+                if (!launcherRow.matches(':hover') && !launcherRow.contains(document.activeElement)) {
+                    setHelpBubbleVisible(false);
+                }
+            }, 5000);
+
+            launcherRow.addEventListener('mouseenter', function () {
+                if (!windowElement.classList.contains('is-open')) setHelpBubbleVisible(true);
+            });
+            launcherRow.addEventListener('mouseleave', function () {
+                if (!initialBubbleVisible) setHelpBubbleVisible(false);
+            });
+            launcherRow.addEventListener('focusin', function () {
+                if (!windowElement.classList.contains('is-open')) setHelpBubbleVisible(true);
+            });
+            launcherRow.addEventListener('focusout', function () {
+                window.setTimeout(function () {
+                    if (!initialBubbleVisible && !launcherRow.contains(document.activeElement)) {
+                        setHelpBubbleVisible(false);
+                    }
+                }, 0);
+            });
+            helpBubble.addEventListener('click', function () {
+                launcher.click();
+            });
+        }
+
+        function addMessage(text, className) {
+            var message = document.createElement('div');
+            message.className = 'rpm-chat-message ' + className + ' mt-2';
+            message.textContent = text;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+            return message;
+        }
+
+        function renderResponse(data, target) {
+            if (data.response_html && !data.products && !data.location && !data.navigation) {
+                target.innerHTML = data.response_html;
+                return;
+            }
+            var paragraph = document.createElement('p');
+            paragraph.textContent = data.response || data.error || 'No pude procesar tu consulta.';
+            target.appendChild(paragraph);
+            if (data.response_html && !data.products && !data.location && !data.navigation) {
+                target.insertAdjacentHTML('beforeend', data.response_html);
+            }
+            if (data.products) {
+                target.insertAdjacentHTML('beforeend', data.response_html || '');
+            }
+            if (data.location) {
+                var map = document.createElement('iframe');
+                map.src = data.location.embed_url;
+                map.title = 'Mapa de Ricas Papas Mary';
+                map.loading = 'lazy';
+                map.style.cssText = 'width:100%;height:150px;border:0;border-radius:10px;margin-top:8px;';
+                target.appendChild(map);
+                var maps = document.createElement('a');
+                maps.href = data.location.maps_url;
+                maps.target = '_blank';
+                maps.rel = 'noopener noreferrer';
+                maps.textContent = 'Abrir en Google Maps';
+                target.appendChild(maps);
+            }
+            if (data.navigation) {
+                var link = document.createElement('a');
+                link.className = 'rpm-chat-navigation-link';
+                link.href = data.navigation.url;
+                link.textContent = data.navigation.label;
+                target.appendChild(link);
+            }
+        }
+
+        launcher.addEventListener('click', function () {
+            toggle(!windowElement.classList.contains('is-open'));
+        });
+        closeButton.addEventListener('click', function () { toggle(false); });
+        messages.addEventListener('click', function (event) {
+            var button = event.target.closest('.rpm-chat-quick-action');
+            if (button) {
+                input.value = button.dataset.message || button.textContent.trim();
+                form.requestSubmit();
+            }
+        });
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var text = input.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            input.value = '';
+            var pending = addMessage('Escribiendo...', 'bot');
+            fetch('{% url "chatbot_response" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ message: text })
+            }).then(function (response) {
+                return response.json().then(function (data) {
+                    if (!response.ok) throw new Error(data.error || 'Error de chatbot');
+                    return data;
+                });
+            }).then(function (data) {
+                pending.innerHTML = '';
+                renderResponse(data, pending);
+                messages.scrollTop = messages.scrollHeight;
+            }).catch(function (error) {
+                pending.textContent = error.message || 'No pude conectarme en este momento.';
+            });
+        });
+    });
+</script>
